@@ -32,12 +32,15 @@ class Game():
 
             player.move(keys, dt)
             for zombie in zombies:
-                zombie.move(player.rect, dt)
+                if zombie.rect.collidelist([z for z in zombies if z != zombie]) == -1:
+                    zombie.move(player.rect, dt)
             
             pygame.draw.rect(self.screen, (255, 0, 0), player.rect)
             for zombie in zombies:
-                pygame.draw.rect(self.screen,(0,255,0), zombie.rect)
+                pygame.draw.rect(self.screen, (0,255,0), zombie.rect)
+                self.screen.blit(zombie.image, zombie.rect)
             self.screen.blit(player.image, player.rect)
+            self.screen.blit(player.arm_sprite, player.arm_rect)
             
             pygame.display.flip()
             dt = self.clock.tick(60) / 1000        
