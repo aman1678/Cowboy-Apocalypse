@@ -14,7 +14,7 @@ class Game():
     def run(self):
         dt = 0
 
-        cords =[(0,0),(1230,0),(1230,600),(0,600)]
+        cords =[(0,0),(1230,0)]
         zombies = [Zombie(x,y) for x,y in cords]
         player = Player()
         sand = pygame.rect.Rect(0,650,1280,70)
@@ -32,13 +32,14 @@ class Game():
 
             player.move(keys, dt)
             for zombie in zombies:
-                if zombie.rect.collidelist([z for z in zombies if z != zombie]) == -1:
-                    zombie.move(player.rect, dt)
+                zombie.move(player.rect, dt)
             
             pygame.draw.rect(self.screen, (255, 0, 0), player.rect)
+            
             for zombie in zombies:
                 pygame.draw.rect(self.screen, (0,255,0), zombie.rect)
                 self.screen.blit(zombie.image, zombie.rect)
+        
             self.screen.blit(player.image, player.rect)
             self.screen.blit(player.arm_sprite, player.arm_rect)
             
