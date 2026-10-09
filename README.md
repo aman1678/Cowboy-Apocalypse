@@ -4,6 +4,6 @@ You are a lone cowboy in the middle of a zombie apocalypse. Survive and defeat a
 
 ## TODO
 
-- update jump mechanics for player
-- have cursor dictate player's pov and pos of arm
-- begin bullet drawing and mechanics
+- Start working on levels 
+- add platforms for player to jump on
+- figure out how to "move" the screen around so that it follows the player

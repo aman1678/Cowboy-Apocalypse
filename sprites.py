@@ -33,24 +33,29 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(-300 * dt, 0)
             self.arm_rect.x = self.rect.x - 42
             self.last_key = "a"
+
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
                 else:
                     self.image = self.image1
+
                 self.delay = 12
+
             if self.flip:
                 self.arm_sprite = pygame.transform.flip(self.arm_sprite, True, False)
                 self.image1 = pygame.transform.flip(self.image1, True, False)
                 self.image2 = pygame.transform.flip(self.image2, True, False)
                 self.flip = False
+
             self.delay -= 1
 
-        if keys[pygame.K_w]:
+        if keys[pygame.K_w] and self.rect.bottom >= 650:
             self.jump = True
         else:
-            if int(self.rect.bottom) < 650 and not self.jump :
+            if int(self.rect.bottom) < 650 and not self.jump:
                 self.rect.move_ip(0, 600 * dt)
+
         if self.jump and self.rect.bottom > 460:
             self.rect.move_ip(0, -600 * dt)
         else:
@@ -60,17 +65,21 @@ class Player(pygame.sprite.Sprite):
             self.rect.move_ip(300 * dt, 0)
             self.arm_rect.x = self.rect.x + 65
             self.last_key = "d"
+
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
                 else:
                     self.image = self.image1
+
                 self.delay = 12
+
             if not self.flip:
                 self.arm_sprite = pygame.transform.flip(self.arm_sprite, True, False)
                 self.image1 = pygame.transform.flip(self.image1, True, False)
                 self.image2 = pygame.transform.flip(self.image2, True, False)
                 self.flip = True
+
             self.delay -= 1
 
         if not (keys[pygame.K_a] + keys[pygame.K_d]):
@@ -101,7 +110,11 @@ class Zombie(pygame.sprite.Sprite):
         self.flip = True
         self.delay = 30
         self.last_key = "a"
+        self.health = 100
 
+    def collision(self, x,y):
+        return pygame.rect.Rect.collidepoint(self.rect, x, y)
+    
     def move(self, target, dt):
         if self.rect.x > target.x:
             self.rect.x -= 100 * dt
@@ -148,4 +161,21 @@ class Zombie(pygame.sprite.Sprite):
             
         if int(self.rect.bottom) <= 650:
             self.rect.y += 100 * dt
-        
+
+class Bullet(pygame.sprite.Sprite):
+
+    def __init__(self,x,y, dir, shoot):
+        super().__init__()
+
+        # Add bullet sprite when drawn 
+
+        self.rect = pygame.rect.Rect(x,y,10,5)
+        self.shoot = shoot
+        self.dir = dir
+
+    def move(self, dt):
+        if self.shoot:
+            if self.dir == "a":
+                self.rect.x -= 1000 * dt
+            elif self.dir == "d":
+                self.rect.x += 1000 * dt
