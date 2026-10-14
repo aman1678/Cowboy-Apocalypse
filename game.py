@@ -1,6 +1,7 @@
 import pygame
 import sys
 from sprites import Player, Zombie, Bullet
+from utilities import Platform
 
 class Game():
     def __init__(self):
@@ -22,6 +23,8 @@ class Game():
         zombies = [Zombie(x,y) for x,y in cords]
         player = Player()
         sand = pygame.rect.Rect(0,650,1280,70)
+
+        plat = Platform()
 
         while True:
             
@@ -60,7 +63,8 @@ class Game():
                     if zombie.health and zombie.collision(bullet.rect.x, bullet.rect.y) and bullet.shoot:
                         bullet.shoot = False
                         zombie.health -= 10
-        
+
+            pygame.draw.rect(self.screen,(194,178,128), plat.rect)
             self.screen.blit(player.image, player.rect)
             self.screen.blit(player.arm_sprite, player.arm_rect)
             

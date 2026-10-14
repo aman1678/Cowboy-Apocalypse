@@ -29,11 +29,12 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, keys, dt):
 
+        # Left motion
         if keys[pygame.K_a]:
-            self.rect.move_ip(-300 * dt, 0)
+            self.rect.x -= 300 * dt
             self.arm_rect.x = self.rect.x - 42
             self.last_key = "a"
-
+        
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
@@ -41,7 +42,7 @@ class Player(pygame.sprite.Sprite):
                     self.image = self.image1
 
                 self.delay = 12
-
+        
             if self.flip:
                 self.arm_sprite = pygame.transform.flip(self.arm_sprite, True, False)
                 self.image1 = pygame.transform.flip(self.image1, True, False)
@@ -49,20 +50,10 @@ class Player(pygame.sprite.Sprite):
                 self.flip = False
 
             self.delay -= 1
-
-        if keys[pygame.K_w] and self.rect.bottom >= 650:
-            self.jump = True
-        else:
-            if int(self.rect.bottom) < 650 and not self.jump:
-                self.rect.move_ip(0, 600 * dt)
-
-        if self.jump and self.rect.bottom > 460:
-            self.rect.move_ip(0, -600 * dt)
-        else:
-            self.jump = False
-
-        if keys[pygame.K_d]:
-            self.rect.move_ip(300 * dt, 0)
+            
+        # Right motion 
+        elif keys[pygame.K_d]:
+            self.rect.x += 300 * dt 
             self.arm_rect.x = self.rect.x + 65
             self.last_key = "d"
 
@@ -82,6 +73,19 @@ class Player(pygame.sprite.Sprite):
 
             self.delay -= 1
 
+        # Jumping and gravity 
+        if keys[pygame.K_w] and self.rect.bottom >= 650:
+            self.jump = True
+        else:
+            if int(self.rect.bottom) < 650 and not self.jump:
+                self.rect.y += 600 * dt
+
+        if self.jump and self.rect.bottom > 460:
+            self.rect.y -= 600 * dt
+        else:
+            self.jump = False
+
+        # Standing image if no motion
         if not (keys[pygame.K_a] + keys[pygame.K_d]):
             if self.last_key == "a":
                 self.image = pygame.transform.flip(self.image0, True, False)
@@ -116,6 +120,9 @@ class Zombie(pygame.sprite.Sprite):
         return pygame.rect.Rect.collidepoint(self.rect, x, y)
     
     def move(self, target, dt):
+    
+        # Zombie's x,y "follow" target's x,y (in this case the player's)
+
         if self.rect.x > target.x:
             self.rect.x -= 100 * dt
             self.last_key = "a"
