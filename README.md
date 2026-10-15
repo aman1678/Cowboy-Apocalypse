@@ -4,6 +4,7 @@ You are a lone cowboy in the middle of a zombie apocalypse. Survive and defeat a
 
 ## TODO
 
-- Start working on levels 
-- add platforms for player to jump on
-- figure out how to "move" the screen around so that it follows the player
+- Write code for camera movement ?
+- Add menu, score, and ammo text
+- Write game over mechanics (player dies)
+

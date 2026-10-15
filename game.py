@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 from sprites import Player, Zombie, Bullet
 from utilities import Platform
 
@@ -17,10 +18,11 @@ class Game():
 
         shoot_cd = 250
         last_shot_time = 0
+        reload_cd = 1250
         bullets = []
 
-        cords = [(0,0),(1230,0)]
-        zombies = [Zombie(x,y) for x,y in cords]
+        cords = [(0,650),(1230,650)]
+        zombies = [Zombie(cord) for cord in cords]
         player = Player()
         sand = pygame.rect.Rect(0,650,1280,70)
 
@@ -32,20 +34,32 @@ class Game():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-            
+
+            if random.randint(0,500) == 0:
+                zombies.append(Zombie(random.choice(cords)))
+
             self.screen.fill((251,165,51))
             pygame.draw.rect(self.screen,(194,178,128),sand)
             keys = pygame.key.get_pressed()
 
-            player.move(keys, dt)
+            player.move(keys, dt, plat)
             for zombie in zombies:
                 zombie.move(player.rect, dt)
 
+            if player.shots == 6:
+                player.reload = True
+                player.shots = 0
+            elif pygame.time.get_ticks() - last_shot_time >= reload_cd:
+                player.reload = False
+
             if keys[pygame.K_SPACE]:
-                if pygame.time.get_ticks() - last_shot_time >= shoot_cd:
-                    bullets.append(Bullet(player.arm_rect.x, player.arm_rect.y + 5, 
-                                        player.last_key, True))
-                    last_shot_time = pygame.time.get_ticks()
+                t = pygame.time.get_ticks()
+                if not player.reload:
+                    if t - last_shot_time >= shoot_cd:
+                        bullets.append(Bullet(player.arm_rect.x, player.arm_rect.y + 5, 
+                                            player.last_key, True))
+                        player.shots += 1
+                        last_shot_time = pygame.time.get_ticks()
                 
             pygame.draw.rect(self.screen, (255, 0, 0), player.rect)
 

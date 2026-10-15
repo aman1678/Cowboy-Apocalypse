@@ -23,15 +23,17 @@ class Player(pygame.sprite.Sprite):
         self.arm_rect = self.arm_sprite.get_rect(topleft=(self.rect.x + 65, self.rect.y + 57))
 
         self.flip = True
-        self.delay = 12
+        self.delay = 8
         self.last_key = "d"
         self.jump = False
+        self.reload = False
+        self.shots = 0
 
-    def move(self, keys, dt):
+    def move(self, keys, dt, plat):
 
         # Left motion
         if keys[pygame.K_a]:
-            self.rect.x -= 300 * dt
+            self.rect.x -= 500 * dt
             self.arm_rect.x = self.rect.x - 42
             self.last_key = "a"
         
@@ -41,7 +43,7 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.image = self.image1
 
-                self.delay = 12
+                self.delay = 8
         
             if self.flip:
                 self.arm_sprite = pygame.transform.flip(self.arm_sprite, True, False)
@@ -53,7 +55,7 @@ class Player(pygame.sprite.Sprite):
             
         # Right motion 
         elif keys[pygame.K_d]:
-            self.rect.x += 300 * dt 
+            self.rect.x += 500 * dt 
             self.arm_rect.x = self.rect.x + 65
             self.last_key = "d"
 
@@ -63,7 +65,7 @@ class Player(pygame.sprite.Sprite):
                 else:
                     self.image = self.image1
 
-                self.delay = 12
+                self.delay = 8
 
             if not self.flip:
                 self.arm_sprite = pygame.transform.flip(self.arm_sprite, True, False)
@@ -74,14 +76,15 @@ class Player(pygame.sprite.Sprite):
             self.delay -= 1
 
         # Jumping and gravity 
-        if keys[pygame.K_w] and self.rect.bottom >= 650:
+        if keys[pygame.K_w] and int(self.rect.bottom) >= 650:
             self.jump = True
         else:
             if int(self.rect.bottom) < 650 and not self.jump:
-                self.rect.y += 600 * dt
+                if not self.rect.colliderect(plat.rect): 
+                    self.rect.y += 1000 * dt
 
-        if self.jump and self.rect.bottom > 460:
-            self.rect.y -= 600 * dt
+        if self.jump and int(self.rect.bottom) >= 360:
+            self.rect.y -= 1000 * dt
         else:
             self.jump = False
 
@@ -96,7 +99,7 @@ class Player(pygame.sprite.Sprite):
 
 class Zombie(pygame.sprite.Sprite):
     
-    def __init__(self, x, y):
+    def __init__(self, cord):
         super().__init__()
 
         self.image0 = pygame.image.load(BASE_PATH + "/zombie/zombie.png").convert_alpha()
@@ -109,12 +112,12 @@ class Zombie(pygame.sprite.Sprite):
         self.image2 = pygame.transform.scale_by(self.image2, 5)
         self.image = pygame.transform.scale_by(self.image, 5)
 
-        self.rect = self.image.get_rect(topleft=(x,y))
+        self.rect = self.image.get_rect(bottomleft=cord)
 
         self.flip = True
         self.delay = 30
         self.last_key = "a"
-        self.health = 100
+        self.health = 50
 
     def collision(self, x,y):
         return pygame.rect.Rect.collidepoint(self.rect, x, y)
