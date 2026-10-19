@@ -6,7 +6,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self):
         super().__init__()
-
+    
         self.image0 = pygame.image.load(BASE_PATH + "cowboy/cowboy.png").convert_alpha()
         self.image1 = pygame.image.load(BASE_PATH + "cowboy/cowboy_walk_1.png").convert_alpha()
         self.image2 = pygame.image.load(BASE_PATH + "cowboy/cowboy_walk_2.png").convert_alpha()

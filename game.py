@@ -2,11 +2,17 @@ import pygame
 import sys
 import random
 from sprites import Player, Zombie, Bullet
-from utilities import Platform
+from utilities import Platform, display_message
 
 class Game():
     def __init__(self):
         pygame.init()
+        pygame.mixer.init()
+
+        self.gun_shot = pygame.mixer.Sound("./assets/sounds/gunshot.mp3")
+        self.gun_shot.set_volume(0.5)
+        self.reload = pygame.mixer.Sound("./assets/sounds/gun_reload.mp3")
+        self.reload.set_volume(0.5)
 
         self.screen = pygame.display.set_mode((1280, 720))
         pygame.display.set_caption("Cowboy Apocalypse")
@@ -18,7 +24,7 @@ class Game():
 
         shoot_cd = 250
         last_shot_time = 0
-        reload_cd = 1250
+        reload_cd = 3250
         bullets = []
 
         cords = [(0,650),(1230,650)]
@@ -49,8 +55,16 @@ class Game():
             if player.shots == 6:
                 player.reload = True
                 player.shots = 0
+                self.reload.play()
             elif pygame.time.get_ticks() - last_shot_time >= reload_cd:
                 player.reload = False
+
+
+            if player.reload:
+                display_message("Ammo: Reloading...", self.screen,(255,255,255),(10,10),"tl")
+            else:
+                display_message(f"Ammo: {6-player.shots}",self.screen,(255,255,255),(10,10),"tl")
+
 
             if keys[pygame.K_SPACE]:
                 t = pygame.time.get_ticks()
@@ -60,7 +74,10 @@ class Game():
                                             player.last_key, True))
                         player.shots += 1
                         last_shot_time = pygame.time.get_ticks()
-                
+                        self.gun_shot.play()
+
+            
+
             pygame.draw.rect(self.screen, (255, 0, 0), player.rect)
 
             for bullet in bullets:
@@ -78,6 +95,7 @@ class Game():
                         bullet.shoot = False
                         zombie.health -= 10
 
+            
             pygame.draw.rect(self.screen,(194,178,128), plat.rect)
             self.screen.blit(player.image, player.rect)
             self.screen.blit(player.arm_sprite, player.arm_rect)
