@@ -1,39 +1,43 @@
 import pygame
 import sys
 import random
-from sprites import Player, Zombie, Bullet
-from utilities import Platform, display_message
+from sprites import Player, Zombie, Bullet, Background
+from utilities import Platform, Audio, display_message
+
+SAND = (194,178,128)
+SKY = (224,123,57)
 
 class Game():
     def __init__(self):
         pygame.init()
-        pygame.mixer.init()
-
-        self.gun_shot = pygame.mixer.Sound("./assets/sounds/gunshot.mp3")
-        self.gun_shot.set_volume(0.5)
-        self.reload = pygame.mixer.Sound("./assets/sounds/gun_reload.mp3")
-        self.reload.set_volume(0.5)
 
         self.screen = pygame.display.set_mode((1280, 720))
         pygame.display.set_caption("Cowboy Apocalypse")
-
         self.clock = pygame.time.Clock()
 
     def run(self):
-        dt = 0
+        
+        # Player init
+        player = Player()
 
+        # Shooting setup
         shoot_cd = 250
         last_shot_time = 0
         reload_cd = 3250
         bullets = []
 
-        cords = [(0,650),(1230,650)]
+        # Zombie spawn setup
+        cords = [(-100,650),(1280,650)]
         zombies = [Zombie(cord) for cord in cords]
-        player = Player()
+
+        # General setup
         sand = pygame.rect.Rect(0,650,1280,70)
-
         plat = Platform()
+        sounds = Audio()
+        background = Background()
+        dt = 0
 
+        # Main game loop
         while True:
             
             for event in pygame.event.get():
@@ -44,28 +48,31 @@ class Game():
             if random.randint(0,500) == 0:
                 zombies.append(Zombie(random.choice(cords)))
 
-            self.screen.fill((251,165,51))
-            pygame.draw.rect(self.screen,(194,178,128),sand)
+            self.screen.fill(SKY)
+            self.screen.blit(background.image, (0,0))
+            pygame.draw.rect(self.screen,SAND,sand)
             keys = pygame.key.get_pressed()
 
+            # Player and zombie movement
             player.move(keys, dt, plat)
             for zombie in zombies:
                 zombie.move(player.rect, dt)
 
+            # Reload mechanic
             if player.shots == 6:
                 player.reload = True
                 player.shots = 0
-                self.reload.play()
+                sounds.reload.play()
             elif pygame.time.get_ticks() - last_shot_time >= reload_cd:
                 player.reload = False
 
-
+            # Ammo display
             if player.reload:
                 display_message("Ammo: Reloading...", self.screen,(255,255,255),(10,10),"tl")
             else:
                 display_message(f"Ammo: {6-player.shots}",self.screen,(255,255,255),(10,10),"tl")
 
-
+            # Shooting mechanics
             if keys[pygame.K_SPACE]:
                 t = pygame.time.get_ticks()
                 if not player.reload:
@@ -74,15 +81,14 @@ class Game():
                                             player.last_key, True))
                         player.shots += 1
                         last_shot_time = pygame.time.get_ticks()
-                        self.gun_shot.play()
-
-            
+                        sounds.gun_shot.play()
 
             pygame.draw.rect(self.screen, (255, 0, 0), player.rect)
 
+            # Drawing everything to screen
             for bullet in bullets:
                 if bullet.shoot:
-                    pygame.draw.rect(self.screen, (0,0,0), bullet.rect)
+                    self.screen.blit(bullet.image, bullet.rect)
                     bullet.move(dt)
 
             for zombie in zombies:

@@ -36,7 +36,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= 500 * dt
             self.arm_rect.x = self.rect.x - 42
             self.last_key = "a"
-        
+
+            # Walk animation
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
@@ -59,6 +60,7 @@ class Player(pygame.sprite.Sprite):
             self.arm_rect.x = self.rect.x + 65
             self.last_key = "d"
 
+            # Walk animation
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
@@ -130,11 +132,13 @@ class Zombie(pygame.sprite.Sprite):
             self.rect.x -= 100 * dt
             self.last_key = "a"
 
+            # Walk animation
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
                 else:
                     self.image = self.image1
+
                 self.delay = 30
 
             if not self.flip:
@@ -148,6 +152,7 @@ class Zombie(pygame.sprite.Sprite):
             self.rect.x += 100 * dt
             self.last_key = "d"
 
+            # Walk animation
             if self.delay == 0:
                 if self.image == self.image1:
                     self.image = self.image2
@@ -177,7 +182,9 @@ class Bullet(pygame.sprite.Sprite):
     def __init__(self,x,y, dir, shoot):
         super().__init__()
 
-        # Add bullet sprite when drawn 
+        self.right_image = pygame.image.load(BASE_PATH + "/cowboy/bullet.png").convert_alpha()
+        self.left_image = pygame.transform.flip(self.right_image, True, False)
+        self.image = self.right_image
 
         self.rect = pygame.rect.Rect(x,y,10,5)
         self.shoot = shoot
@@ -187,5 +194,17 @@ class Bullet(pygame.sprite.Sprite):
         if self.shoot:
             if self.dir == "a":
                 self.rect.x -= 1000 * dt
+                self.image = self.left_image
+
             elif self.dir == "d":
                 self.rect.x += 1000 * dt
+                self.image = self.right_image
+
+class Background(pygame.sprite.Sprite):
+
+    def __init__(self):
+        super().__init__()
+
+        self.image = pygame.image.load(BASE_PATH + "background.png").convert_alpha()
+        self.image = pygame.transform.scale(self.image, (1280,720))
+    
