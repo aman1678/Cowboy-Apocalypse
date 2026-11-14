@@ -1,10 +1,9 @@
 # Cowboy Apocalypse
 
-You are a lone cowboy in the middle of a zombie apocalypse. Survive and defeat all the zombies to escape!
+You are a lone cowboy in the middle of a zombie apocalypse. Survive as long as you can against the never ending horde!.
 
 ## TODO
 
-- Write code for camera movement ?
 - Add menu, score
 - Write game over mechanics (player dies)
 

@@ -81,9 +81,14 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_w] and int(self.rect.bottom) >= 650:
             self.jump = True
         else:
+            # If player lands on plat -> do not apply gravity
             if int(self.rect.bottom) < 650 and not self.jump:
-                if not self.rect.colliderect(plat.rect): 
-                    self.rect.y += 1000 * dt
+                if not ((int(self.rect.bottom) <= int(plat.rect.top) + 10)
+                    and (int(self.rect.bottom) >= (int(plat.rect.top) - 10))
+                    and (int(self.rect.left) <= int(plat.rect.right))
+                    and (int(self.rect.right) >= int(plat.rect.left))):
+
+                     self.rect.y += 1000 * dt
 
         if self.jump and int(self.rect.bottom) >= 360:
             self.rect.y -= 1000 * dt
